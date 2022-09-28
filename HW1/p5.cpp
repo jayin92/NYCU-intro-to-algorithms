@@ -77,7 +77,43 @@ const ll MAXN = 100005;
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 void solve(){
-    
+    ll n, k;
+    cin >> n >> k;
+    ll tmp = n;
+    ll cnt = 0;
+    priority_queue<ll> pq;
+    ll i = 0;
+    while(tmp != 0){
+        cnt += tmp & 1LL;
+        if(tmp & 1LL){
+            pq.push(i);
+        }
+        i++;
+        tmp >>= 1LL;
+    }
+    if(cnt > k){
+        cout << "NO" << endl;
+        return;
+    }
+    // reverse(ALL(ans));
+     while((int)pq.size() != k){
+        tmp = pq.top();
+        if(tmp <= 0){
+            cout << "NO" << endl;
+            return;
+        }
+        debug(tmp);
+        pq.pop();
+        pq.push(tmp - 1);
+        pq.push(tmp - 1);
+    }
+    cout << "YES" << endl;       
+    while((int)pq.size() != 1){
+        cout << (ll)(1LL << pq.top()) << " ";
+        pq.pop();
+    }
+    cout << (ll)(1LL << pq.top()) << endl;
+
 }
 
 /********** Good Luck :) **********/
@@ -85,7 +121,7 @@ int main () {
     TIME(main);
     IOS();
     int t = 1;
-    cin >> t;
+    // cin >> t;
     while(t--){
         solve();
     }
