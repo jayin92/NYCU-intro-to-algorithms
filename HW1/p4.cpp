@@ -76,24 +76,74 @@ const ll MAXN = 100005;
 
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
+int extracMax(vector<int>&);
+void heapifyFromTop(vector<int>&, int);
+void buildHeap(vector<int>&, int);
+
+int extractMax(vector<int>& heap){
+    int res = heap[1];
+    int sz = heap.size();
+    swap(heap[1], heap[sz-1]);
+    heap.pop_back();
+    heapifyFromTop(heap, 1);
+
+    return res;
+}
+
+void heapifyFromTop(vector<int>& heap, int idx){
+    int l = 2 * idx;
+    int r = 2 * idx + 1;
+    int largest = idx;
+    int sz = heap.size();
+
+    if(r < sz && heap[r] > heap[largest]){
+        largest = r;
+    }
+    
+    if(l < sz && heap[l] > heap[largest]){
+        largest = l;
+    }
+
+    if(largest != idx){
+        swap(heap[idx], heap[largest]);
+        heapifyFromTop(heap, largest);
+    }
+}
+
+void buildHeap(vector<int>& heap, int idx){
+    if(idx > (int)heap.size()) return;
+    buildHeap(heap, idx*2);
+    buildHeap(heap, idx*2+1);
+
+    heapifyFromTop(heap, idx);
+}
+
 void solve(){
-    int q;
-    cin >> q;
+    int t;
+    cin >> t;
     int m, x;
-    deque<int> dq;
-    while(q--){
+    queue<int> q;
+    vector<int> heap = {-1};
+    while(t--){
         cin >> m;
         if(m == 1){
             cin >> x;
-            dq.push_back(x);
+            q.push(x);
         } else if(m == 2){
-            sort(ALL(dq), greater<int>());
+            while(!q.empty()){
+                heap.push_back(q.front());
+                q.pop();
+            }
+            buildHeap(heap, 1);
         } else {
-            if(dq.empty()) cout << "Oh Oh" << endl;
-            else {
-                debug("---");
-                cout << dq.front() << endl;
-                dq.pop_front();
+            debug("---");
+            if(heap.size() != 1){
+                cout << extractMax(heap) << endl;
+            } else if(!q.empty()){
+                cout << q.front() << endl;
+                q.pop();
+            } else {
+                cout << "Oh Oh" << endl;
             }
         }
     }    

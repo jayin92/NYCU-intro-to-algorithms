@@ -76,8 +76,46 @@ const ll MAXN = 100005;
 
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
+vector<int> v(int a, int b, int c, int d){
+    vector<int> res;
+    res.pb(a);
+    res.pb(b);
+    res.pb(c);
+    res.pb(d);
+
+    sort(ALL(res));
+    return res;
+}
+
 void solve(){
-    
+    ll n, t;
+    cin >> n >> t;
+    vector<ll> a(n);
+    for(auto &i: a) cin >> i;
+    sort(ALL(a));
+    set<vector<int>> ans;
+
+    for(int i=0;i<n;i++){
+        for(int j=i+1;j<n;j++){
+            int l = j + 1;
+            int r = n - 1;
+            ll tmp = t - a[i] - a[j];
+            while(l < r){
+                ll sum = a[l] + a[r];
+                if(sum == tmp){
+                    ans.insert(v(a[i], a[j], a[l], a[r]));
+                    l ++;
+                    r --;
+                } else if(sum < tmp){
+                    l ++;
+                } else {
+                    r --;
+                }
+            }
+        }
+    }
+    int sz = ans.size();
+    cout << (sz == 0 ? "FeiDooDoo_Zuo_Wei_Men" : to_string(sz)) << endl;
 }
 
 /********** Good Luck :) **********/
@@ -85,7 +123,6 @@ int main () {
     TIME(main);
     IOS();
     int t = 1;
-    cin >> t;
     while(t--){
         solve();
     }
