@@ -76,8 +76,53 @@ const ll MAXN = 100005;
 
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
+// 0 1 2 3
+// 0 1 2 3 4 5
+// 0 1 2 3
+
+ll median(vector<ll> a){
+    int n = a.size() / 2;
+    nth_element(a.begin(), a.begin()+n, a.end());
+    ll med = a[n];
+    if((int)a.size() % 2 == 0){
+        auto max_it = max_element(a.begin(), a.begin()+n);
+        med = (med + (ll)*max_it) / 2LL;
+    }
+    return med;
+}
+
+ll dfs(vector<ll>& a, ll l, ll r){
+    if(r - l <= 2) return 0;
+    ll mid = l + (r - l - 1) / 2LL + 1;
+
+    vector<ll> vv(a.begin()+l, a.begin()+mid);
+    vector<ll> vvv(a.begin()+mid, a.begin()+r);
+    ll x = median(vv);
+    ll y = median(vvv);
+    ll xx, yy;
+    xx = yy = 0;
+    for(int i=l;i<mid;i++){
+        xx += llabs((ll)a[i] - x);
+    }
+    for(int i=mid;i<r;i++){
+        yy += llabs((ll)a[i] - y);
+    }
+    ll ret =  dfs(a, l, mid) + yy;
+    ret = min(ret, dfs(a, mid, r) + xx);
+
+    return ret;
+
+}
+
 void solve(){
+    int n;
+    cin >> n;
+    vector<ll> a(n);
+    for(auto &i: a) cin >> i;
     
+    ll ans = dfs(a, 0, n);
+
+    cout << ans << endl;
 }
 
 /********** Good Luck :) **********/
@@ -85,7 +130,6 @@ int main () {
     TIME(main);
     IOS();
     int t = 1;
-    cin >> t;
     while(t--){
         solve();
     }
