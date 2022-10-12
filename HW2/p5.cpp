@@ -72,12 +72,42 @@ public:
 const ll MOD = 1000000007;
 const ll INF = 0x3f3f3f3f3f3f3f3f;
 const int iNF = 0x3f3f3f3f;
-const ll MAXN = 100005;
 
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
+
+vector<int> idx;
+ll n, k, a, b;
+
+// 1 2 3 4 5 6
+ll divide(int l, int r){
+    ll ret = INF;
+    ll sz = r - l + 1;
+    int x = lower_bound(ALL(idx), l) - idx.begin();
+    int y = upper_bound(ALL(idx), r) - idx.begin() - 1;
+    ll cnt = y - x + 1;
+    if(cnt == 0){
+        ret = min(ret, a);
+    } else {
+        ret = min(ret, b * cnt * sz);
+    }
+    if(sz < 2) return ret;
+    ll mid = (l + r) / 2LL;
+    ret = min(ret, divide(l, mid) + divide(mid+1, r));
+
+    return ret;
+}
+
 void solve(){
-    
+    cin >> n >> k >> a >> b;
+    int tmp = 0;
+    for(int i=1;i<=k;i++){
+        cin >> tmp;
+        idx.push_back(tmp);       
+    }
+    sort(ALL(idx));
+    ll ans = divide(1, n);
+    cout << ans << endl;
 }
 
 /********** Good Luck :) **********/
@@ -85,7 +115,7 @@ int main () {
     TIME(main);
     IOS();
     int t = 1;
-    cin >> t;
+    // cin >> t;
     while(t--){
         solve();
     }
