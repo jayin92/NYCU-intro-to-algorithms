@@ -79,7 +79,6 @@ mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 vector<int> idx;
 ll n, k, a, b;
 
-// 1 2 3 4 5 6
 ll divide(int l, int r){
     ll ret = INF;
     ll sz = r - l + 1;
@@ -87,7 +86,7 @@ ll divide(int l, int r){
     int y = upper_bound(ALL(idx), r) - idx.begin() - 1;
     ll cnt = y - x + 1;
     if(cnt == 0){
-        ret = min(ret, a);
+        return a;
     } else {
         ret = min(ret, b * cnt * sz);
     }
