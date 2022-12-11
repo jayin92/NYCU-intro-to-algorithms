@@ -76,19 +76,103 @@ const ll MAXN = 100005;
 
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-void solve(){
-    
+vector<int> p(MAXN);
+
+void init(){
+    for(int i=0;i<MAXN;i++){
+        p[i] = i;
+    }
+}
+
+int find(int x){
+    if(p[x] == x) return x;
+    return p[x] = find(p[x]);
+}
+
+void merge(int x, int y){
+    p[find(x)] = find(y);
+}
+
+class edge{
+public:
+    edge(int _u, int _v, int _w): u(_u), v(_v), w(_w) {}
+    friend ostream &operator<<(ostream &os, const edge& e) {
+        return os << "(" << e.u << ", " << e.v << ", " << e.w << ")";
+    }
+    int u, v, w;
+
+};
+
+bool cmp_max(const edge& a, const edge& b){
+    return a.w > b.w;
+}
+
+bool cmp_min(const edge& a, const edge& b){
+    return a.w < b.w;
+}
+
+
+void solve(int v, int e, int w){
+    init();
+    vector<edge> total;
+    for(int i=0;i<e;i++){
+        int uu, vv, ww;
+        cin >> uu >> vv >> ww;
+        total.push_back(edge(uu, vv, ww));
+    }
+    vector<bool> strong(v, false);
+    int tmp;
+    for(int i=0;i<w;i++){
+        cin >> tmp;
+        strong[tmp] = true;
+    }
+    vector<edge> par;
+    vector<edge> rem;
+    int ans1 = 0;
+    int ans2 = 0;
+    for(auto i: total){
+        if(!strong[i.u] && !strong[i.v]){
+            par.push_back(i);
+        } else {
+            merge(i.u, i.v);
+            ans2 += i.w;
+        }
+    }
+    sort(ALL(par), cmp_min);
+    for(auto i: par){
+        if(find(i.u) != find(i.v)){
+            merge(i.u, i.v);
+            ans2 += i.w;
+        }
+    }
+    init();
+    sort(ALL(total), cmp_max);
+    debug(total, par);
+    for(auto i: total){
+        if(find(i.u) != find(i.v)){
+            merge(i.u, i.v);
+            ans1 += i.w;
+        }
+    }
+    int idx = find(0);
+    for(int i=0;i<v;i++){
+        if(idx != find(i)){
+            cout << "no" << endl;
+            return;
+        }
+    }
+    cout << ans1 - ans2 << endl;
 }
 
 /********** Good Luck :) **********/
 int main () {
     TIME(main);
     IOS();
-    int t = 1;
-    cin >> t;
-    while(t--){
-        solve();
+    int v, e, w;
+    while(cin >> v >> e >> w){
+        solve(v, e, w);
     }
 
     return 0;
 }
+

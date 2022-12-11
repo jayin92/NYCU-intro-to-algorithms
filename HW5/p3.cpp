@@ -72,22 +72,107 @@ public:
 const ll MOD = 1000000007;
 const ll INF = 0x3f3f3f3f3f3f3f3f;
 const int iNF = 0x3f3f3f3f;
-const ll MAXN = 100005;
+const ll MAXN = 505;
 
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-void solve(){
-    
+
+vector<int> p(MAXN);
+
+void init(){
+    for(int i=0;i<MAXN;i++){
+        p[i] = i;
+    }
+}
+
+int find(int x){
+    if(p[x] == x) return x;
+    return p[x] = find(p[x]);
+}
+
+void merge(int x, int y){
+    p[find(x)] = find(y);
+}
+
+class edge{
+public:
+    edge(int _u, int _v, int _w): u(_u), v(_v), w(_w) {}
+    friend ostream &operator<<(ostream &os, const edge& e) {
+        return os << "(" << e.u << ", " << e.v << ", " << e.w << ")";
+    }
+    int u, v, w;
+
+};
+
+bool cmp(const edge& a, const edge& b){
+    return a.w < b.w;
+}
+
+void solve(int v, int e, int w){
+    init();
+    vector<edge> total;
+    for(int i=0;i<e;i++){
+        int uu, vv, ww;
+        cin >> uu >> vv >> ww;
+        total.push_back(edge(uu, vv, ww));
+    }
+    vector<bool> strong(v, false);
+    int tmp;
+    for(int i=0;i<w;i++){
+        cin >> tmp;
+        strong[tmp] = true;
+    }
+    vector<edge> par;
+    vector<edge> rem;
+    for(auto i: total){
+        if(!strong[i.u] && !strong[i.v]){
+            par.push_back(i);
+        }
+    }
+    sort(ALL(par), cmp);
+    sort(ALL(total), cmp);
+    // debug(par, total);
+    ll ans = 0;
+    for(auto i: par){
+        if(find(i.u) != find(i.v)){
+            merge(i.u, i.v);
+            ans += i.w;
+        }
+    }
+    int idx = -1;
+    for(int i=0;i<v;i++){
+        if(strong[i] == false){
+            if(idx == -1){
+                idx = find(i);
+            } else if(idx != find(i)){
+                cout << -1 << endl;
+                return;
+            }
+        }
+    }
+    for(auto i: total){
+        if(find(i.u) != find(i.v)){
+            merge(i.u, i.v);
+            ans += i.w;
+        }
+    }
+    idx = find(0);
+    for(int i=0;i<v;i++){
+        if(idx != find(i)){
+            cout << -1 << endl;
+            return;
+        }
+    }
+    cout << ans << endl;
 }
 
 /********** Good Luck :) **********/
 int main () {
     TIME(main);
     IOS();
-    int t = 1;
-    cin >> t;
-    while(t--){
-        solve();
+    int v, e, w;
+    while(cin >> v >> e >> w){
+        solve(v, e, w);
     }
 
     return 0;
