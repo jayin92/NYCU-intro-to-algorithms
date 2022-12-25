@@ -76,18 +76,69 @@ const ll MAXN = 100005;
 
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-void solve(){
-    
+
+void dijkstra(int src, vector<vector<pii>>& adj, vector<int>& w, vector<ll>& d){
+    // vector<bool> visit(n+1, false);
+    priority_queue<pll, vector<pll>, greater<pll>> pq; // first: weight, second: vertex
+    d[src] = w[src];
+    pq.push(mp(w[src], src));
+    while(!pq.empty()){
+        pll edge = pq.top();
+        pq.pop();
+        ll u = edge.second;
+        for(auto i: adj[u]){
+            ll v = i.second;
+            ll alt = d[u] + i.first + w[v];
+            if(alt < d[v]){
+                d[v] = alt;
+                pq.push(mp(alt, v));
+            }
+        }
+    }
+}
+
+void solve(int l, int r, int s){
+    vector<int> w(l);
+    vector<vector<pii>> adj(l); // first: weight, second: v
+    vector<bool> is_shel(l, false);
+    int src;
+
+    for(auto &i: w){
+        cin >> i;
+    }
+    int u, v, ww;
+    for(int i=0;i<r;i++){
+        cin >> u >> v >> ww;
+        adj[u].push_back({ww, v});
+        adj[v].push_back({ww, u});
+    }
+
+    for(int i=0;i<s;i++){
+        cin >> u;
+        is_shel[u] = true;
+    }
+    vector<ll> d(l, iNF);
+    cin >> src;
+    dijkstra(src, adj, w, d);
+    ll ans = iNF;
+    for(int i=0;i<l;i++){
+        if(is_shel[i]){
+            ans = min(ans, d[i]);
+        }
+    }
+
+    cout << (ans == iNF ? -1 : ans) << endl;
+
+
 }
 
 /********** Good Luck :) **********/
 int main () {
     TIME(main);
     IOS();
-    int t = 1;
-    cin >> t;
-    while(t--){
-        solve();
+    int l, r, s;
+    while(cin >> l >> r >> s){
+        solve(l, r, s);
     }
 
     return 0;
